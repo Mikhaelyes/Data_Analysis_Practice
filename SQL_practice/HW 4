@@ -1,0 +1,23 @@
+SELECT employees.last_name, employees.first_name, customers.company_name
+FROM orders
+INNER JOIN customers ON orders.customer_Id = customers.customer_Id
+INNER JOIN employees ON orders.employee_Id = employees.employee_Id
+INNER JOIN shippers ON orders.ship_via = shippers.shipper_Id
+WHERE orders.ship_city = 'London'
+AND customers.city = 'London'
+AND shippers.company_name = 'Speedy Express'
+
+
+SELECT products.product_name, products.units_In_stock, suppliers.contact_name, suppliers.phone
+FROM products
+INNER JOIN categories ON products.category_Id = categories.category_Id
+INNER JOIN suppliers ON products.supplier_Id = suppliers.supplier_Id 
+WHERE products.discontinued = 0
+AND products.units_In_stock < 20
+AND categories.category_name IN ('Seafood', 'Beverages')
+
+
+SELECT company_name, order_id
+FROM customers
+LEFT JOIN orders USING(customer_Id)
+WHERE orders.customer_Id IS NULL

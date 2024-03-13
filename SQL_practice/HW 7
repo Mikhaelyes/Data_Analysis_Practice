@@ -1,0 +1,59 @@
+/*
+1. Создать представление, которое выводит следующие колонки:
+order_date, required_date, shipped_date, ship_postal_code, company_name, contact_name, phone, last_name, 
+first_name, title из таблиц orders, customers и employees.
+Сделать select к созданному представлению, выведя все записи, где order_date больше 1го января 1997 года.
+*/
+CREATE VIEW orders_customers_employees AS
+SELECT order_date, required_date, shipped_date, ship_postal_code, company_name, contact_name, phone, 
+last_name, first_name, title 
+FROM orders
+JOIN customers USING (customer_id)
+JOIN employees USING (employee_id)
+
+SELECT *
+FROM orders_customers_employees
+WHERE order_date > '1997-01-01';
+
+
+
+/*
+2. Создать представление, которое выводит следующие колонки:
+order_date, required_date, shipped_date, ship_postal_code, ship_country, company_name, 
+contact_name, phone, last_name, first_name, title из таблиц orders, customers, employees.
+Попробовать добавить к представлению (после его создания) колонки ship_country, postal_code и reports_to. 
+Убедиться, что проихсодит ошибка. Переименовать представление и создать новое уже с дополнительными колонками.
+Сделать к нему запрос, выбрав все записи, отсортировав их по ship_county.
+Удалить переименованное представление.
+*/
+CREATE OR REPLACE VIEW orders_customers_employees AS
+SELECT order_date, required_date, shipped_date, ship_postal_code, company_name, contact_name, phone, 
+last_name, first_name, title, ship_country, customers.postal_code, reports_to
+FROM orders
+JOIN customers USING (customer_id)
+JOIN employees USING (employee_id)
+
+SELECT *
+FROM orders_customers_employees_1
+ORDER BY ship_country;
+
+ALTER VIEW products_suppliers_categories RENAME TO products_detailed;
+
+DROP VIEW orders_customers_employees_new
+
+
+
+/*
+3.  Создать представление "активных" (discontinued = 0) продуктов, содержащее все колонки. 
+Представление должно быть защищено от вставки записей, в которых discontinued = 1.
+Попробовать сделать вставку записи с полем discontinued = 1 - убедиться, что не проходит.
+*/
+CREATE OR REPLACE VIEW active_products AS
+SELECT product_id, product_name, supplier_id, category_id, quantity_per_unit, unit_price,
+units_in_stock, units_on_order, reorder_level, discontinued
+FROM products
+WHERE discontinued <> 1
+WITH LOCAL CHECK OPTION;
+
+INSERT INTO active_products
+VALUES(78, 'abc', 1, 1, 'abc', 1, 1, 1, 1, 1);
